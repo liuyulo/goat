@@ -1,47 +1,58 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+    import Textfield from '@smui/textfield';
+    import Card from '@smui/card';
+
+    import { fade } from 'svelte/transition';
+
+    import car from './assets/car.png';
+    import goat from './assets/goat.png';
+    import door from './assets/door.png';
+
+    // update localStorage
+    const key = 'goat';
+    let value = JSON.parse(localStorage.getItem(key) || '10');
+    $: localStorage.setItem(key, JSON.stringify(value));
+
+    let select: number, opened: boolean;
+    // reset select and opened if value changes
+    $: if(value){
+        select = undefined;
+        opened = false;
+    }
+    $: doors = Array.from(Array(value), _ => false);
+    $: answer = Math.random() * value | 0;
+
+
+    function choose(n: number){
+        if(opened) return;
+        select = n;
+        opened = true;
+        // if selected is correct, choose another to keep closed
+        while(n == answer){
+            n = Math.random() * value | 0;
+        }
+        doors = doors.map((_, i) => i != answer && i != n);
+    }
+
+    function reveal(_:number){
+        doors = Array.from(doors, _ => true);
+    }
+
+    const onclick = (i:number) => () => (opened ? reveal : choose)(i);
 </script>
 
-<main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+<main class="p-4">
+    <Textfield bind:value type="number"/>
+    <div class="mt-4 grid grid-cols-4 md:grid-cols-[repeat(auto-fill,200px)] gap-4">
+        {#each doors as d, i}
+            {@const hit = i == answer}
+            {@const highlight = i == select}
+            {@const src = (d ? (hit ? car : goat) : door)}
+            <Card variant="outlined" padded on:click={onclick(i)} class={`cursor-pointer ${highlight ? '!border-red-600' : ''}`}>
+                {#key src}
+                    <img in:fade {src} alt="door"/>
+                {/key}
+            </Card>
+        {/each}
+      </div>
 </main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>

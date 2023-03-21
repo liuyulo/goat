@@ -7,13 +7,22 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "prepare": "smui-theme compile src/assets/smui.css -i src/theme -i ./node_modules",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
+    "@floaterest/color": "^1.0.0",
+    "@smui/card": "7.0.0-beta.0",
+    "@smui/textfield": "7.0.0-beta.0",
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "@tsconfig/svelte": "^3.0.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "sass": "^1.59.3",
+    "smui-theme": "7.0.0-beta.0",
     "svelte": "^3.57.0",
     "svelte-check": "^3.1.4",
+    "tailwindcss": "^3.2.7",
     "tslib": "^2.5.0",
     "typescript": "^5.0.2",
     "vite": "^4.2.1"
