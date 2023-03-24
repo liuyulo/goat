@@ -15,44 +15,54 @@
 
     let select: number, opened: boolean;
     // reset select and opened if value changes
-    $: if(value){
+    $: if (value) {
         select = undefined;
         opened = false;
     }
-    $: doors = Array.from(Array(value), _ => false);
-    $: answer = Math.random() * value | 0;
+    $: doors = Array.from(Array(value), (_) => false);
+    $: answer = (Math.random() * value) | 0;
 
-
-    function choose(n: number){
-        if(opened) return;
+    function choose(n: number) {
+        if (opened) return;
         select = n;
         opened = true;
         // if selected is correct, choose another to keep closed
-        while(n == answer){
-            n = Math.random() * value | 0;
+        while (n == answer) {
+            n = (Math.random() * value) | 0;
         }
         doors = doors.map((_, i) => i != answer && i != n);
     }
 
-    function reveal(_:number){
-        doors = Array.from(doors, _ => true);
+    function reveal(_: number) {
+        doors = Array.from(doors, (_) => true);
     }
 
-    const onclick = (i:number) => () => (opened ? reveal : choose)(i);
+    const onclick = (i: number) => () => (opened ? reveal : choose)(i);
 </script>
 
 <main class="p-4">
-    <Textfield bind:value type="number"/>
-    <div class="mt-4 grid grid-cols-4 md:grid-cols-[repeat(auto-fill,200px)] gap-4">
+    <Textfield bind:value type="number" />
+    <div
+        class="mt-4 grid grid-cols-4 md:grid-cols-[repeat(auto-fill,200px)] gap-4"
+    >
         {#each doors as d, i}
             {@const hit = i == answer}
             {@const highlight = i == select}
-            {@const src = (d ? (hit ? car : goat) : door)}
-            <Card variant="outlined" padded on:click={onclick(i)} class={`cursor-pointer ${highlight ? '!border-red-600' : ''}`}>
+            {@const src = d ? (hit ? car : goat) : door}
+            <Card
+                variant="outlined"
+                padded
+                on:click={onclick(i)}
+                class={`cursor-pointer ${highlight ? 'highlight' : ''}`}
+            >
                 {#key src}
-                    <img in:fade {src} alt="door"/>
+                    <img in:fade {src} alt="door" />
                 {/key}
             </Card>
         {/each}
-      </div>
+    </div>
 </main>
+
+<style lang="sass">
+
+</style>
